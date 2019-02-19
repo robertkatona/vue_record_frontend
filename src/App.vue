@@ -9,7 +9,7 @@
                             <v-text-field
                                     name="home"
                                     v-model="homeTeam"
-                                    :rules="nameRules"
+                                    :rules="teamNameRules"
                                     :counter="20"
                                     label="Home team"
                                     required
@@ -19,7 +19,7 @@
                             <v-text-field
                                     name="visitor"
                                     v-model="visitorTeam"
-                                    :rules="nameRules"
+                                    :rules="teamNameRules"
                                     :counter="20"
                                     label="Visitor Team"
                                     required
@@ -29,41 +29,71 @@
                 </v-container>
                 <v-btn type="submit" outline color="green">Submit</v-btn>
             </v-form>
-            <!--<div class="text-xs-center">-->
-                <v-form class="addMember" @submit.prevent="getMemberData">
-                    <v-container fill-height>
-                        <!--<v-layout align-center justify-center>-->
-                        <v-layout>
-                            <v-flex xs6>
-                                <v-text-field
-                                        name="firstName"
-                                        v-model="firstName"
-                                        :rules="nameRules"
-                                        :counter="20"
-                                        label="First Name"
-                                        required
-                                ></v-text-field>
-                            </v-flex>
-                            <v-flex xs6>
-                                <v-text-field
-                                        name="lastName"
-                                        v-model="lastName"
-                                        :rules="nameRules"
-                                        :counter="20"
-                                        label="Last Name"
-                                        required
-                                ></v-text-field>
-                            </v-flex>
-                            <v-flex xs2>
-                                <v-switch v-model="fill" label="Team" v-bind="homeOrAway()"></v-switch>
-                            </v-flex>
-                            <v-flex xs3>
-                                <v-btn @submit.prevent="getMemberData" type="submit" outline color="blue">Add member</v-btn>
-                            </v-flex>
-                        </v-layout>
-                    </v-container>
-                </v-form>
-            <!--</div>-->
+            <v-form class="addMember" @submit.prevent="getMemberData">
+                <v-container fill-height>
+                    <v-layout>
+                        <v-flex xs6>
+                            <v-text-field
+                                    name="firstName"
+                                    v-model="firstName"
+                                    :rules="nameRules"
+                                    :counter="15"
+                                    label="First Name"
+                                    required
+                            ></v-text-field>
+                        </v-flex>
+                        <v-flex xs6>
+                            <v-text-field
+                                    name="lastName"
+                                    v-model="lastName"
+                                    :rules="nameRules"
+                                    :counter="15"
+                                    label="Last Name"
+                                    required
+                            ></v-text-field>
+                        </v-flex>
+                        <v-flex xs2>
+                            <v-switch
+                                    :label="`${teamType}`"
+                                    name="teamType"
+                                    v-model="fill"
+                                    @change="homeOrAway"
+                                    color="black"
+                            ></v-switch>
+                        </v-flex>
+                        <v-flex xs3>
+                            <v-btn @submit.prevent="getMemberData" type="submit" outline color="blue">Add member</v-btn>
+                        </v-flex>
+                    </v-layout>
+                </v-container>
+            </v-form>
+            <v-container>
+                <v-layout>
+                    <v-flex>
+                        <div class="home-team-members">
+                            <h3>Home Team</h3>
+                            <div v-for="(key, index) in homeTeamMembers">
+                                {{ index + 1 }}. {{ key.firstName }} {{key.lastName }}
+                            </div>
+                        </div>
+
+                    </v-flex>
+                </v-layout>
+            </v-container>
+            <v-container>
+                <v-layout>
+                    <v-flex>
+                        <div class="away-team-members">
+                            <h3>Away Team</h3>
+                            <div v-for="(key, index) in visitorTeamMembers">
+                                {{ index + 1 }}. {{ key.firstName }} {{key.lastName }}
+                            </div>
+                        </div>
+
+                    </v-flex>
+                </v-layout>
+            </v-container>
+
         </div>
     </div>
 </template>
@@ -74,13 +104,16 @@
             valid: false,
             fill: true,
             teamType: 'Team',
-            homeTeam: '',
             homeTeamMembers: [],
-            visitorTeam: '',
             visitorTeamMembers: [],
-            nameRules: [
+            teamNameRules: [
                 v => !!v || 'Team name is required',
                 v => v.length <= 20 || 'Team name must be less than 20 characters',
+
+            ],
+            nameRules: [
+                v => !!v || 'Name is required',
+                v => v.length <= 15 || 'Name must be less than 15 characters',
 
             ]
         }),
@@ -91,21 +124,26 @@
                 } else {
                     this.teamType = 'Home'
                 }
-                console.log(this.teamType)
             },
             getData: function (submitEvent) {
                 this.homeTeam = submitEvent.target.elements.home.value;
                 this.visitorTeam = submitEvent.target.elements.visitor.value;
-                console.log('Home:' + this.homeTeam);
-                console.log('Visitor:' + this.visitorTeam);
             },
             getMemberData: function (submitEvent) {
-                this.homeTeamMembers.push({
-                    "firstName": submitEvent.target.elements.firstName.value,
-                    "lastName": submitEvent.target.elements.lastName.value,
-                    "teamType": this.teamType
-                });
-                console.log(this.homeTeamMembers);
+                console.log(submitEvent.target.elements.teamType);
+                // if (submitEvent.elements.teamType === 'Home') {
+                //     this.homeTeamMembers.push({
+                //         "firstName": submitEvent.target.elements.firstName.value,
+                //         "lastName": submitEvent.target.elements.lastName.value,
+                //         "teamType": this.teamType
+                //     })
+                // } else {
+                //     this.visitorTeamMembers.push({
+                //         "firstName": submitEvent.target.elements.firstName.value,
+                //         "lastName": submitEvent.target.elements.lastName.value,
+                //         "teamType": this.teamType
+                //     })
+                // }
             }
         }
     }
