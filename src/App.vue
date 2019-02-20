@@ -55,7 +55,6 @@
                         <v-flex xs2>
                             <v-switch
                                     :label="`${teamType}`"
-                                    name="teamType"
                                     v-model="fill"
                                     @change="homeOrAway"
                                     color="black"
@@ -93,7 +92,6 @@
                     </v-flex>
                 </v-layout>
             </v-container>
-
         </div>
     </div>
 </template>
@@ -101,6 +99,11 @@
 <script>
     export default {
         data: () => ({
+            player: {
+                fistName: '',
+                lastName: '',
+                teamType: ''
+            },
             valid: false,
             fill: true,
             teamType: 'Team',
@@ -119,10 +122,15 @@
         }),
         methods: {
             homeOrAway: function () {
-                if (this.fill === true) {
-                    this.teamType = 'Away'
+                if (this.fill === false) {
+                    this.teamType = 'Home';
+                    console.log(this.fill);
+                    console.log(this.teamType);
+
                 } else {
-                    this.teamType = 'Home'
+                    this.teamType = 'Away';
+                    console.log(this.fill);
+                    console.log(this.teamType);
                 }
             },
             getData: function (submitEvent) {
@@ -130,7 +138,20 @@
                 this.visitorTeam = submitEvent.target.elements.visitor.value;
             },
             getMemberData: function (submitEvent) {
-                console.log(submitEvent.target.elements.teamType);
+                this.player.fistName = submitEvent.target.elements.firstName.value;
+                this.player.lastName = submitEvent.target.elements.lastName.value;
+                this.player.teamType = this.teamType;
+                console.log(this.teamType);
+
+                if (this.teamType === 'Home') {
+                    console.log(this.homeTeamMembers.length);
+                    return this.homeTeamMembers.push(this.player);
+                }
+                console.log(this.visitorTeamMembers.length);
+                return this.visitorTeamMembers.push(this.player);
+
+
+
                 // if (submitEvent.elements.teamType === 'Home') {
                 //     this.homeTeamMembers.push({
                 //         "firstName": submitEvent.target.elements.firstName.value,
