@@ -2,169 +2,92 @@
     <div class="app">
         <div class="text-xs-center">
             <v-btn outline color="red">Start</v-btn>
-            <v-form @submit.prevent="getData" v-model="valid">
+            <v-form @submit.prevent="getTeamNames" v-model="valid">
                 <v-container fill-height>
                     <v-layout>
-                        <v-flex xs6>
-                            <v-text-field
-                                    name="home"
-                                    v-model="homeTeam"
-                                    :rules="teamNameRules"
-                                    :counter="20"
-                                    label="Home team"
-                                    required
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex xs6>
-                            <v-text-field
-                                    name="visitor"
-                                    v-model="visitorTeam"
-                                    :rules="teamNameRules"
-                                    :counter="20"
-                                    label="Visitor Team"
-                                    required
-                            ></v-text-field>
-                        </v-flex>
+                        <TeamName name="home" label="Home Team"></TeamName>
+                        <TeamName name="visitor" label="Visitor Team"></TeamName>
                     </v-layout>
                 </v-container>
                 <v-btn type="submit" outline color="green">Submit</v-btn>
             </v-form>
-            <v-form class="addMember" @submit.prevent="getMemberData">
-                <v-container fill-height>
-                    <v-layout>
-                        <v-flex xs6>
-                            <v-text-field
-                                    name="firstName"
-                                    v-model="firstName"
-                                    :rules="nameRules"
-                                    :counter="15"
-                                    label="First Name"
-                                    required
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex xs6>
-                            <v-text-field
-                                    name="lastName"
-                                    v-model="lastName"
-                                    :rules="nameRules"
-                                    :counter="15"
-                                    label="Last Name"
-                                    required
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex xs2>
-                            <v-switch
-                                    :label="`${teamType}`"
-                                    v-model="fill"
-                                    @change="homeOrAway"
-                                    color="black"
-                            ></v-switch>
-                        </v-flex>
-                        <v-flex xs3>
-                            <v-btn @submit.prevent="getMemberData" type="submit" outline color="blue">Add member</v-btn>
-                        </v-flex>
-                    </v-layout>
-                </v-container>
-            </v-form>
-            <v-container>
-                <v-layout>
-                    <v-flex>
-                        <div class="home-team-members">
-                            <h3>Home Team</h3>
-                            <div v-for="(key, index) in homeTeamMembers">
-                                {{ index + 1 }}. {{ key.firstName }} {{key.lastName }}
-                            </div>
-                        </div>
-
-                    </v-flex>
-                </v-layout>
-            </v-container>
-            <v-container>
-                <v-layout>
-                    <v-flex>
-                        <div class="away-team-members">
-                            <h3>Away Team</h3>
-                            <div v-for="(key, index) in visitorTeamMembers">
-                                {{ index + 1 }}. {{ key.firstName }} {{key.lastName }}
-                            </div>
-                        </div>
-
-                    </v-flex>
-                </v-layout>
-            </v-container>
+            <div class="home-team-table" style="width: 500px; height: 500px; margin: auto">
+                <TeamEditor :model="homeTeam"></TeamEditor>
+            </div>
+            <div class="visitor-team-table" style="width: 500px; height: 500px; margin: auto">
+                <TeamEditor :model="visitorTeam"></TeamEditor>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+
+    import TeamEditor from "./components/TeamEditor.vue";
+    import TeamName from "./components/TeamName.vue";
+
+
     export default {
+        components: {
+            TeamEditor,
+            TeamName
+        },
         data: () => ({
-            player: {
-                fistName: '',
-                lastName: '',
-                teamType: ''
-            },
+            teamName: '',
+            homeTeam: '',
+            visitorTeam: '',
             valid: false,
             fill: true,
             teamType: 'Team',
-            homeTeamMembers: [],
-            visitorTeamMembers: [],
-            teamNameRules: [
-                v => !!v || 'Team name is required',
-                v => v.length <= 20 || 'Team name must be less than 20 characters',
-
-            ],
             nameRules: [
                 v => !!v || 'Name is required',
                 v => v.length <= 15 || 'Name must be less than 15 characters',
 
-            ]
-        }),
-        methods: {
-            homeOrAway: function () {
-                if (this.fill === false) {
-                    this.teamType = 'Home';
-                    console.log(this.fill);
-                    console.log(this.teamType);
-
-                } else {
-                    this.teamType = 'Away';
-                    console.log(this.fill);
-                    console.log(this.teamType);
-                }
+            ],
+            dialog: false,
+            headers: [
+                {
+                    text: 'Players',
+                    align: 'left',
+                    sortable: false,
+                    value: 'name'
+                },
+                {text: 'First Name', value: 'firstName'},
+                {text: 'Last Name', value: 'lastName'},
+                {text: '#Number', value: 'number'}
+            ],
+            editedIndex: -1,
+            editedPlayer: {
+                firstName: '',
+                lastName: '',
+                number: '',
+                team: ''
             },
-            getData: function (submitEvent) {
+            defaultIPlayer: {
+                firstName: '',
+                lastName: '',
+                number: '',
+                team: ''
+            }
+        }),
+
+        computed: {
+            formTitle() {
+                return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+            }
+        },
+
+        watch: {
+            dialog(val) {
+                val || this.close()
+            }
+        },
+        methods: {
+            getTeamNames: function (submitEvent) {
                 this.homeTeam = submitEvent.target.elements.home.value;
                 this.visitorTeam = submitEvent.target.elements.visitor.value;
-            },
-            getMemberData: function (submitEvent) {
-                this.player.fistName = submitEvent.target.elements.firstName.value;
-                this.player.lastName = submitEvent.target.elements.lastName.value;
-                this.player.teamType = this.teamType;
-                console.log(this.teamType);
-
-                if (this.teamType === 'Home') {
-                    console.log(this.homeTeamMembers.length);
-                    return this.homeTeamMembers.push(this.player);
-                }
-                console.log(this.visitorTeamMembers.length);
-                return this.visitorTeamMembers.push(this.player);
-
-
-
-                // if (submitEvent.elements.teamType === 'Home') {
-                //     this.homeTeamMembers.push({
-                //         "firstName": submitEvent.target.elements.firstName.value,
-                //         "lastName": submitEvent.target.elements.lastName.value,
-                //         "teamType": this.teamType
-                //     })
-                // } else {
-                //     this.visitorTeamMembers.push({
-                //         "firstName": submitEvent.target.elements.firstName.value,
-                //         "lastName": submitEvent.target.elements.lastName.value,
-                //         "teamType": this.teamType
-                //     })
-                // }
+                console.log('Home: ' + this.homeTeam);
+                console.log('Visitor: ' + this.visitorTeam);
             }
         }
     }
