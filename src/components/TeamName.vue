@@ -1,14 +1,15 @@
 <template>
-    <v-flex xs6>
-        <v-text-field
-                :name="name"
-                :value="teamName"
-                :rules="teamNameRules"
-                :counter="15"
-                :label="label"
-                required
-        ></v-text-field>
-    </v-flex>
+        <v-flex xs6>
+            <v-text-field
+                    :name="name"
+                    :value="teamName"
+                    :rules="teamNameRules"
+                    :counter="15"
+                    :label="label"
+                    required
+            ></v-text-field>
+        </v-flex>
+
 </template>
 
 <script>

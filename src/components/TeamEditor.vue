@@ -75,6 +75,7 @@
 <script>
     export default {
         name: "TeamEditor"  ,
+        props: ['teamName'],
         data: () => ({
             teamName: '',
             valid: false,

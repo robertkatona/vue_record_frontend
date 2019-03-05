@@ -12,10 +12,10 @@
                 <v-btn type="submit" outline color="green">Submit</v-btn>
             </v-form>
             <div class="home-team-table" style="width: 500px; height: 500px; margin: auto">
-                <TeamEditor></TeamEditor>
+                <TeamEditor :team-name="homeTeam"></TeamEditor>
             </div>
             <div class="visitor-team-table" style="width: 500px; height: 500px; margin: auto">
-                <TeamEditor></TeamEditor>
+                <TeamEditor :team-name="visitorTeam"></TeamEditor>
             </div>
         </div>
     </div>
@@ -88,6 +88,9 @@
                 this.visitorTeam = submitEvent.target.elements.visitor.value;
                 console.log('Home: ' + this.homeTeam);
                 console.log('Visitor: ' + this.visitorTeam);
+            },
+            changeTheName: function () {
+
             }
         }
     }
