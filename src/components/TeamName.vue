@@ -2,6 +2,7 @@
     <v-flex xs6>
         <v-text-field
                 :name="name"
+                :value="teamName"
                 :rules="teamNameRules"
                 :counter="15"
                 :label="label"
@@ -18,6 +19,7 @@
                 v => !!v || 'Team name is required',
                 v => v.length <= 15 || 'Team name must be less than 20 characters',
             ],
+            teamName: ''
         }),
         props: {
             label: {

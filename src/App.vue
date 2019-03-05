@@ -12,10 +12,10 @@
                 <v-btn type="submit" outline color="green">Submit</v-btn>
             </v-form>
             <div class="home-team-table" style="width: 500px; height: 500px; margin: auto">
-                <TeamEditor :model="homeTeam"></TeamEditor>
+                <TeamEditor></TeamEditor>
             </div>
             <div class="visitor-team-table" style="width: 500px; height: 500px; margin: auto">
-                <TeamEditor :model="visitorTeam"></TeamEditor>
+                <TeamEditor></TeamEditor>
             </div>
         </div>
     </div>
