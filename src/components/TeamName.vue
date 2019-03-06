@@ -9,7 +9,6 @@
                     required
             ></v-text-field>
         </v-flex>
-
 </template>
 
 <script>
