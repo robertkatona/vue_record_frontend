@@ -16,7 +16,7 @@
         >
             <template slot="items" slot-scope="props">
                 <td></td>
-                <td class="text-xs-left">{{ props.item.input }}</td>
+                <td class="text-xs-left">{{ props.item.firstName }}</td>
                 <td class="text-xs-left">{{ props.item.lastName }}</td>
                 <td class="text-xs-left"># {{ props.item.jersey }}</td>
                 <td class="justify-center layout px-0">
@@ -45,12 +45,11 @@
 <script>
     export default {
         name: "TeamEditor",
-        props: ['teamName'],
+        props: ['teamName', 'teamMembers'],
         data: () => ({
             valid: false,
             fill: true,
             teamType: 'Team',
-            teamMembers: [],
             nameRules: [
                 v => !!v || 'Name is required',
                 v => v.length <= 15 || 'Name must be less than 15 characters',
@@ -64,7 +63,7 @@
                     sortable: false,
                     value: 'name'
                 },
-                {text: 'First Name', value: 'input'},
+                {text: 'First Name', value: 'firstName'},
                 {text: 'Last Name', value: 'lastName'},
                 {text: '#Number', value: 'jersey'}
             ],
@@ -89,6 +88,7 @@
             initialize() {
             },
             editItem(item) {
+                console.log(this.teamMembers);
                 this.editedIndex = this.teamMembers.indexOf(item);
                 this.editedPlayer = Object.assign({}, item);
                 this.dialog = true

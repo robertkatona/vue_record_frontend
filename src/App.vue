@@ -25,19 +25,19 @@
                             <PlayerData name="inputFirstName" label="First name"></PlayerData>
                             <PlayerData name="inputLastName" label="Last name"></PlayerData>
                             <PlayerData name="inputJersey" label="# Jersey"></PlayerData>
-                        </v-layout>
-                        <v-container>
-                            <v-switch v-model="switch1" :label="`TEAM: ${getTeams()}`"></v-switch>
-                        </v-container>
+                            </v-layout>
                     </v-container>
+                    <div style="text-align: center">
+                        <v-switch style="display: inline-block" v-model="switch1" :label="`TEAM: ${getTeams()}`"></v-switch>
+                    </div>
                     <v-btn type="submit" outline color="green">Save</v-btn>
                 </v-form>
             </div>
             <div class="team-table">
-                <TeamEditor :team-name="teams.homeTeam"></TeamEditor>
+                <TeamEditor :team-members="teamMembers.homeTeamPlayers" :team-name="teams.homeTeam"></TeamEditor>
             </div>
             <div class="team-table">
-                <TeamEditor :team-name="teams.visitorTeam"></TeamEditor>
+                <TeamEditor :team-members="teamMembers.visitorTeamPlayers" :team-name="teams.visitorTeam"></TeamEditor>
             </div>
         </div>
     </div>
