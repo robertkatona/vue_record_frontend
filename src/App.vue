@@ -10,7 +10,7 @@
                             <TeamName name="visitor" label="Visitor Team"></TeamName>
                         </v-layout>
                     </v-container>
-                    <v-btn type="submit" outline color="green">Submit</v-btn>
+                    <v-btn type="submit" outline color="green">Save</v-btn>
                 </v-form>
             </div>
             <div>
@@ -22,14 +22,44 @@
                 <v-form @submit.prevent="addNewPlayer" v-model="valid">
                     <v-container fill-height>
                         <v-layout>
-                            <PlayerData name="inputFirstName" label="First name"></PlayerData>
-                            <PlayerData name="inputLastName" label="Last name"></PlayerData>
-                            <PlayerData name="inputJersey" label="# Jersey"></PlayerData>
-                            </v-layout>
+                            <PlayerName name="inputName" label="Player name"></PlayerName>
+                            <PlayerJersey name="inputJersey" label="# Jersey"></PlayerJersey>
+                        </v-layout>
                     </v-container>
-                    <div style="text-align: center">
-                        <v-switch style="display: inline-block" v-model="switch1" :label="`TEAM: ${getTeams()}`"></v-switch>
-                    </div>
+
+                    <template>
+                        <v-card height="200px" flat>
+                            <div class="headline text-xs-center pa-5">
+                                {{ getTeams() }}
+                            </div>
+                            <v-bottom-nav
+                                    :value="true"
+                                    absolute
+                                    color="transparent"
+                            >
+                                <v-btn
+                                        color="teal"
+                                        flat
+                                        :value="teams.homeTeam"
+                                >
+                                    <span>{{ teams.homeTeam }}</span>
+                                    <v-icon>person_outline</v-icon>
+                                </v-btn>
+
+                                <v-btn
+                                        color="teal"
+                                        flat
+                                        :value="teams.visitorTeam"
+                                        v-model="switch1"
+                                >
+                                    <span>{{ teams.visitorTeam }}</span>
+                                    <v-icon>person</v-icon>
+                                </v-btn>
+
+                            </v-bottom-nav>
+                        </v-card>
+                    </template>
+
                     <v-btn type="submit" outline color="green">Save</v-btn>
                 </v-form>
             </div>
@@ -46,16 +76,19 @@
 <script>
     import TeamEditor from "./components/TeamEditor.vue";
     import TeamName from "./components/TeamName.vue";
-    import PlayerData from "./components/PlayerData";
+    import PlayerName from "./components/PlayerName";
+    import PlayerJersey from "./components/PlayerJersey";
 
 
     export default {
         components: {
-            PlayerData,
+            PlayerName,
+            PlayerJersey,
             TeamEditor,
             TeamName
         },
         data: () => ({
+            defaultTeamName: 'Team Name',
             switch1: false,
             teamName: '',
             teams: {
@@ -76,29 +109,19 @@
 
             ],
             dialog: false,
-            headers: [
-                {
-                    text: 'Players',
-                    align: 'left',
-                    sortable: false,
-                    value: 'name'
-                },
-                {text: 'First Name', value: 'input'},
-                {text: 'Last Name', value: 'lastName'},
-                {text: '#Number', value: 'jersey'}
-            ],
             editedIndex: -1,
             editedPlayer: {
-                firstName: '',
-                lastName: '',
+                name: '',
                 jersey: '',
-                team: ''
+                team: '',
+                onTheCourt: false
             },
             defaultIPlayer: {
                 firstName: '',
                 lastName: '',
                 jersey: '',
-                team: ''
+                team: '',
+                onTheCourt: false
             }
         }),
 
@@ -116,8 +139,10 @@
         methods: {
             getTeams: function () {
                 if (!this.switch1) {
+                    console.log(this.teams.homeTeam);
                     return this.teams.homeTeam;
                 }
+                console.log(this.teams.visitorTeam);
                 return this.teams.visitorTeam;
 
             },
@@ -128,8 +153,7 @@
                 // console.log('Visitor: ' + this.teams.visitorTeam);
             },
             addNewPlayer: function (submitEvent) {
-                this.editedPlayer.firstName = submitEvent.target.elements.inputFirstName.value;
-                this.editedPlayer.lastName = submitEvent.target.elements.inputLastName.value;
+                this.editedPlayer.name = submitEvent.target.elements.inputName.value;
                 this.editedPlayer.jersey = submitEvent.target.elements.inputJersey.value;
                 if (!this.switch1) {
                     this.editedPlayer.team = this.teams.homeTeam;

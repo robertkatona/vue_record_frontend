@@ -9,113 +9,113 @@
             ></v-divider>
             <v-spacer></v-spacer>
         </v-toolbar>
-        <v-data-table
-                :headers="headers"
-                :items="teamMembers"
-                class="elevation-2"
-        >
-            <template slot="items" slot-scope="props">
-                <td></td>
-                <td class="text-xs-left">{{ props.item.firstName }}</td>
-                <td class="text-xs-left">{{ props.item.lastName }}</td>
-                <td class="text-xs-left"># {{ props.item.jersey }}</td>
-                <td class="justify-center layout px-0">
-                    <v-icon
-                            small
-                            class="mr-2"
-                            @click="editItem(props.item)"
-                    >
-                        edit
-                    </v-icon>
-                    <v-icon
-                            small
-                            @click="deleteItem(props.item)"
-                    >
-                        delete
-                    </v-icon>
-                </td>
-            </template>
-            <template slot="no-data">
-                <v-btn color="primary" @click="initialize">Reset</v-btn>
-            </template>
-        </v-data-table>
+
+        <template>
+            <div>
+                <v-data-table
+                        :headers="headers"
+                        :items="teamMembers"
+                >
+                    <template v-slot:items="props">
+                        <td>
+                            <v-edit-dialog
+                                    :return-value.sync="props.item.name"
+                                    lazy
+                                    @save="save"
+                                    @cancel="cancel"
+                                    @open="open"
+                                    @close="close"
+                            > {{ props.item.name }}
+                                <template v-slot:input>
+                                    <v-text-field
+                                            v-model="props.item.name"
+                                            :rules="[maxNameChars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                    ></v-text-field>
+                                </template>
+                            </v-edit-dialog>
+                        </td>
+                        <td>
+                            <v-edit-dialog
+                                    :return-value.sync="props.item.jersey"
+                                    lazy
+                                    @save="save"
+                                    @cancel="cancel"
+                                    @open="open"
+                                    @close="close"
+                            > {{ props.item.jersey }}
+                                <template v-slot:input>
+                                    <v-text-field
+                                            v-model="props.item.jersey"
+                                            :rules="[maxJerseyChars]"
+                                            label="Edit"
+                                            single-line
+                                            counter
+                                    ></v-text-field>
+                                </template>
+                            </v-edit-dialog>
+                        </td>
+                        <td>
+                            <v-checkbox  v-model="props.item.onTheCourt"
+                                         primary
+                                         hide-details
+                            ></v-checkbox>
+                        </td>
+                    </template>
+                </v-data-table>
+
+                <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
+                    {{ snackText }}
+                    <v-btn flat @click="snack = false">Close</v-btn>
+                </v-snackbar>
+            </div>
+        </template>
     </div>
 </template>
 
 <script>
     export default {
-        name: "TeamEditor",
         props: ['teamName', 'teamMembers'],
-        data: () => ({
-            valid: false,
-            fill: true,
-            teamType: 'Team',
-            nameRules: [
-                v => !!v || 'Name is required',
-                v => v.length <= 15 || 'Name must be less than 15 characters',
-
-            ],
-            dialog: false,
-            headers: [
-                {
-                    text: 'Players',
-                    align: 'left',
-                    sortable: false,
-                    value: 'name'
-                },
-                {text: 'First Name', value: 'firstName'},
-                {text: 'Last Name', value: 'lastName'},
-                {text: '#Number', value: 'jersey'}
-            ],
-            editedIndex: -1,
-            editedPlayer: {
-                input: '',
-                lastName: '',
-                jersey: '',
-                team: ''
-            },
-            defaultIPlayer: {
-                input: '',
-                lastName: '',
-                jersey: '',
-                team: ''
+        data() {
+            return {
+                snack: false,
+                snackColor: '',
+                snackText: '',
+                maxNameChars: v => v.length <= 20 || 'Input too long!',
+                maxJerseyChars: v => v.length <= 2 || 'Jersey must be max 2 digits long!',
+                pagination: {},
+                headers: [
+                    {
+                        text: 'Players',
+                        align: 'left',
+                        sortable: false,
+                        value: 'name'
+                    },
+                    {text: '# Jersey', value: 'jersey'},
+                    {text: 'Player On The Court', value: 'onTheCourt'}
+                ],
             }
-        }),
-        created() {
-            this.initialize()
         },
         methods: {
-            initialize() {
-            },
-            editItem(item) {
-                console.log(this.teamMembers);
-                this.editedIndex = this.teamMembers.indexOf(item);
-                this.editedPlayer = Object.assign({}, item);
-                this.dialog = true
-            },
-
-            deleteItem(item) {
-                const index = this.teamMembers.indexOf(item);
-                confirm('Are you sure you want to delete this item?') && this.teamMembers.splice(index, 1)
-            },
-
-            close() {
-                this.dialog = false;
-                setTimeout(() => {
-                    this.editedPlayer = Object.assign({}, this.defaultIPlayer);
-                    this.editedIndex = -1
-                }, 300)
-            },
-
             save() {
-                if (this.editedIndex > -1) {
-                    Object.assign(this.teamMembers[this.editedIndex], this.editedPlayer);
-                } else {
-                    this.editedPlayer.team = this.teamName;
-                    console.log(this.editedPlayer);
-                    this.teamMembers.push(this.editedPlayer);
-                }
-                this.close()
+                this.snack = true;
+                this.snackColor = 'success';
+                this.snackText = 'Data saved'
+            },
+            cancel() {
+                this.snack = true;
+                this.snackColor = 'error';
+                this.snackText = 'Canceled'
+            },
+            open() {
+                this.snack = true;
+                this.snackColor = 'info';
+                this.snackText = 'Dialog opened'
+            },
+            close() {
+                console.log('Dialog closed')
             }
         }
     }
